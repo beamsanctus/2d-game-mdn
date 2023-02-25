@@ -28,7 +28,7 @@ const bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0 };
+        bricks[c][r] = { x: 0, y: 0, status: 1 };           // status 1 = alive, 0 = dead(destroy)
     }
 }
 
@@ -77,15 +77,37 @@ function drawBall() {
 function drawBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
-            const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-            const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
+            if (bricks[c][r].status === 1) {                // check is brick destroyed or not 0 = destroyed
+                const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = "#0095DD";
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+    }
+}
+
+function collisionDetection() {
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            const b = bricks[c][r];                         // Store All Bricks
+            // calculations
+            // if center of ball is inside the coordinates of one bricks -> change ball direction
+            /*
+                The x position of the ball is greater than the x position of the brick.
+                The x position of the ball is less than the x position of the brick plus its width.
+                The y position of the ball is greater than the y position of the brick.
+                The y position of the ball is less than the y position of the brick plus its height.
+            */
+            if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                dy = -dy;
+                b.status = 0;                               // this brick is destroyed
+            }
         }
     }
 }
@@ -96,6 +118,7 @@ function draw() {
     drawBricks();
     drawPaddle();
     drawBall();
+    collisionDetection();
 
     // Ball Part
     // check wall collision
