@@ -1,6 +1,7 @@
 const canvas = document.getElementById("myCanvas");         // get canvas ref
 const ctx = canvas.getContext("2d");                        // get rendering context for painting
 
+// ball position
 let x = canvas.width / 2;
 let y = canvas.height - 30;
 
@@ -72,9 +73,18 @@ function draw() {
     if (x + dx > canvas.width - ballRadius || x + dx < 0 + ballRadius) {
         dx = -dx;                                           // reverse ball direction
     }
-    // check top and bottom
-    if (y + dy > canvas.height - ballRadius || y + dy < 0 + ballRadius) {
-        dy = -dy;                                           // reverse ball direction
+
+    if (y + dy < ballRadius) {
+        dy = -dy;
+    } else if (y + dy > canvas.height - ballRadius) {
+        if (x > paddleX && x < paddleX + paddleWidth) { // is ball x position inside paddle width
+            dy = -dy;
+        }
+        else {
+            alert("GAME OVER");
+            document.location.reload();
+            clearInterval(interval); // Needed for Chrome to end game
+        }
     }
     // move ball
     x += dx;
@@ -82,14 +92,14 @@ function draw() {
 
     // Paddle Part
     if (rightPressed) {
-        paddleX = Math.min(paddleX + 7, 
+        paddleX = Math.min(paddleX + 7,
             canvas.width - paddleWidth);                    // prevent paddle move out of canvas on the right
     } else if (leftPressed) {
-        paddleX = Math.max(paddleX - 7, 
+        paddleX = Math.max(paddleX - 7,
             0);                                             // prevent paddle move out of canvas on the left
     }
-    
+
 }
 
 
-setInterval(draw, 10);                                      //  draw every 10 millisec
+const interval = setInterval(draw, 10);                                      //  draw every 10 millisec
