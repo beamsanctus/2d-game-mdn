@@ -104,9 +104,11 @@ function collisionDetection() {
                 The y position of the ball is greater than the y position of the brick.
                 The y position of the ball is less than the y position of the brick plus its height.
             */
-            if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
-                dy = -dy;
-                b.status = 0;                               // this brick is destroyed
+            if (b.status === 1) {
+                if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                    dy = -dy;
+                    b.status = 0;                               // this brick is destroyed
+                }
             }
         }
     }
